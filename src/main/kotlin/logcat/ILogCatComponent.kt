@@ -5,4 +5,7 @@ interface ILogCatComponent {
     fun launchLogCatViewing(
         addTerminalLine: (String) -> Unit
     )
+
+    fun stopLogcatViewing()
+
 }

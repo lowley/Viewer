@@ -5,22 +5,43 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
-class LogCatComponent: ILogCatComponent {
+class LogCatComponent : ILogCatComponent {
 
-    val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private var job = SupervisorJob()
+    private val scope = CoroutineScope(Dispatchers.IO + job)
+    private var process: Process? = null
 
     override fun launchLogCatViewing(addTerminalLine: (String) -> Unit) {
+        job = SupervisorJob()
 
         scope.launch {
-            val process = ProcessBuilder("adb", "logcat", "-v", "time")
+            process = ProcessBuilder("adb", "logcat", "-v", "time")
                 .redirectErrorStream(true)
                 .start()
 
-            val reader = process.inputStream.bufferedReader()
-
-            reader.lineSequence().forEach { line ->
-                scope.launch(Dispatchers.Main) { addTerminalLine(line) }
+            process!!.inputStream.bufferedReader().useLines { seq ->
+                val batch = mutableListOf<String>()
+                var lastFlush = System.nanoTime()
+                for (line in seq) {
+                    batch += line
+                    val now = System.nanoTime()
+                    val shouldFlush = batch.size >= 100 || (now - lastFlush) > 150_000_000L // ~150ms
+                    if (shouldFlush) {
+                        val toSend = batch.toList(); batch.clear(); lastFlush = now
+                        // Ici, appelez une API batch du VM si possible.
+                        toSend.forEach { addTerminalLine(it) } // minimal: toujours mieux que lancer une coroutine par ligne sur Main
+                    }
+                }
+                // flush final
+                if (batch.isNotEmpty()) batch.forEach { addTerminalLine(it) }
             }
+        }
+    }
+
+    override fun stopLogcatViewing() {
+        process?.let {
+            it.destroy()
+            job.cancel() // annule les lectures en cours
         }
     }
 }

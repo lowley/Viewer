@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -24,13 +25,14 @@ context(scope: ColumnScope)
 fun TerminalDisplay(
     terminalContentFlow: ViewerViewModel.terminalContentFlow
 ) = with(scope) {
+
     val terminalContent by terminalContentFlow.collectAsState()
     val listState = rememberLazyListState()
 
     // À chaque changement de taille de la liste, on va tout en bas
     LaunchedEffect(terminalContent.size) {
         if (terminalContent.isNotEmpty()) {
-            listState.animateScrollToItem(terminalContent.lastIndex)
+            listState.scrollToItem(terminalContent.lastIndex)
         }
     }
 

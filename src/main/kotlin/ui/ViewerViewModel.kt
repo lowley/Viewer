@@ -46,8 +46,12 @@ class ViewerViewModel(
         _terminalContent.update { content }
     }
 
+    private val maxLines = 1000
     fun addTerminalLine(line: String){
-        _terminalContent.update { it + line }
+        _terminalContent.update { curr ->
+            val next = curr + line
+            if (next.size > maxLines) next.takeLast(maxLines) else next
+        }
     }
 
 
@@ -71,7 +75,9 @@ class ViewerViewModel(
 
                     DeviceAPI -> {}
                     Both -> {}
-                    else -> {}
+                    else -> {
+                        logcat.stopLogcatViewing()
+                    }
                 }
             }
         }

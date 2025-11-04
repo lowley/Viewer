@@ -32,7 +32,8 @@ context(scope: RowScope)
 @Composable
 fun ExchangeModeChooser(
     modifier: Modifier = Modifier,
-    setExchangeMode: (ExchangeMode) -> Unit
+    setExchangeMode: (ExchangeMode) -> Unit,
+    stopLogcatViewing: () -> Unit
 ) = with(scope) {
 
     var selectedIndex by remember { mutableIntStateOf(0) }
@@ -56,8 +57,15 @@ fun ExchangeModeChooser(
                     count = exchangeModes.count()
                 ),
                 onClick = {
-                    selectedIndex = index
-                    setExchangeMode(exchangeMode)
+                    if (selectedIndex != index) {
+                        selectedIndex = index
+                        setExchangeMode(exchangeMode)
+                    }
+                    else {
+                        selectedIndex = 0
+                        setExchangeMode(ExchangeMode.None)
+                    }
+
                 },
                 selected = index == selectedIndex,
                 label = { Text(exchangeMode.name) }
