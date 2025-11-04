@@ -16,6 +16,22 @@ repositories {
 dependencies {
     testImplementation(kotlin("test"))
     implementation(compose.desktop.currentOs)
+
+    //////////////////////////////
+    // injections de dépendance //
+    //////////////////////////////
+    implementation("io.insert-koin:koin-core:4.0.0")      // version à adapter si besoin
+    implementation("io.insert-koin:koin-compose:4.0.0")   // intégration Compose
+
+    /////////////////////////
+    // material expressive //
+    /////////////////////////
+    implementation("org.jetbrains.compose.material3:material3:1.9.0-alpha04")
+
+    ///////////////
+    // reflexion //
+    ///////////////
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.24")
 }
 
 compose.desktop {
