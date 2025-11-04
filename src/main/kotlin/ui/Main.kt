@@ -1,13 +1,19 @@
 package lorry.ui
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -17,12 +23,15 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -30,6 +39,7 @@ import lorry.basics.appModule
 import lorry.basics.getAll
 import lorry.basics.getAllOf
 import lorry.ui.utils.ExchangeMode
+import lorry.ui.utils.ExchangeModeChooser
 import org.koin.compose.koinInject
 import org.koin.core.context.GlobalContext.startKoin
 
@@ -48,50 +58,56 @@ fun main() = application {
 fun App() {
 
     val viewModel: ViewerViewModel = koinInject()
-    val exchangeModes = getAllOf<ExchangeMode>()
-
+    val terminalContent by viewModel.terminalContent.collectAsState()
 
     MaterialExpressiveTheme {
         Column(
             modifier = Modifier.fillMaxSize()
-                .padding(start = 15.dp, top = 5.dp),
+                .padding(top = 5.dp),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                var selectedIndex by remember { mutableIntStateOf(0) }
-
-                Text(
+                ExchangeModeChooser(
                     modifier = Modifier
-                        .align(Alignment.CenterVertically),
-                    text = "Connexion à")
+                        .padding(start = 15.dp),
+                    //après choix d'un exchangeMode
+                    setExchangeMode = viewModel::setExchangeMode,
+                )
+            }
 
-                SingleChoiceSegmentedButtonRow(
-                    modifier = Modifier
-                        .padding(start = 10.dp)
-                        .height(35.dp),
-                ) {
-                    exchangeModes.sortedBy { it.index }.forEachIndexed { index, exchangeMode ->
-                        SegmentedButton(
-                            shape = SegmentedButtonDefaults.itemShape(
-                                index = index,
-                                count = exchangeModes.count()
-                            ),
-                            onClick = {
-                                selectedIndex = index
-                                viewModel.setExchangeMode(exchangeMode)
-                            },
-                            selected = index == selectedIndex,
-                            label = { Text(exchangeMode.name) }
-                        )
-                    }
-
-
+            val listState = rememberLazyListState()
+            // À chaque changement de taille de la liste, on va tout en bas
+            LaunchedEffect(terminalContent.size) {
+                if (terminalContent.isNotEmpty()) {
+                    listState.scrollToItem(terminalContent.lastIndex)
+                    // ou animateScrollToItem(...) si tu veux un défilement animé
                 }
             }
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(5.dp)
+                    .background(color = Color(0xFFDADADA), shape = RoundedCornerShape(8.dp)),
+                state = listState
+            ) {
+                items(terminalContent){ line ->
+                    Text(
+                        text = line,
+                    )
+                }
+            }
+
+
+
+
+
         }
     }
 }
+
+
+
 
 
 

@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     kotlin("jvm") version "2.2.20"
     id("org.jetbrains.compose") version "1.9.2"
@@ -14,6 +16,7 @@ repositories {
 }
 
 dependencies {
+    implementation("androidx.lifecycle:lifecycle-viewmodel-desktop:2.9.4")
     testImplementation(kotlin("test"))
     implementation(compose.desktop.currentOs)
 
@@ -32,6 +35,9 @@ dependencies {
     // reflexion //
     ///////////////
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.24")
+
+    implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.9.5")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.8.1") // par ex.
 }
 
 compose.desktop {
@@ -45,4 +51,8 @@ tasks.test {
 }
 kotlin {
     jvmToolchain(23)
+}
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.compilerOptions {
+    freeCompilerArgs.set(listOf("-Xcontext-parameters"))
 }
