@@ -40,6 +40,7 @@ import lorry.basics.getAll
 import lorry.basics.getAllOf
 import lorry.ui.utils.ExchangeMode
 import lorry.ui.utils.ExchangeModeChooser
+import lorry.ui.utils.TerminalDisplay
 import org.koin.compose.koinInject
 import org.koin.core.context.GlobalContext.startKoin
 
@@ -58,7 +59,6 @@ fun main() = application {
 fun App() {
 
     val viewModel: ViewerViewModel = koinInject()
-    val terminalContent by viewModel.terminalContent.collectAsState()
 
     MaterialExpressiveTheme {
         Column(
@@ -76,27 +76,9 @@ fun App() {
                 )
             }
 
-            val listState = rememberLazyListState()
-            // À chaque changement de taille de la liste, on va tout en bas
-            LaunchedEffect(terminalContent.size) {
-                if (terminalContent.isNotEmpty()) {
-                    listState.scrollToItem(terminalContent.lastIndex)
-                    // ou animateScrollToItem(...) si tu veux un défilement animé
-                }
-            }
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(5.dp)
-                    .background(color = Color(0xFFDADADA), shape = RoundedCornerShape(8.dp)),
-                state = listState
-            ) {
-                items(terminalContent){ line ->
-                    Text(
-                        text = line,
-                    )
-                }
-            }
+            TerminalDisplay(
+                terminalContentFlow = viewModel.terminalContent
+            )
 
 
 

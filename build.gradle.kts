@@ -54,5 +54,5 @@ kotlin {
 }
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.compilerOptions {
-    freeCompilerArgs.set(listOf("-Xcontext-parameters"))
+    freeCompilerArgs.set(listOf("-Xcontext-parameters", "-Xnested-type-aliases"))
 }
