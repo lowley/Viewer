@@ -68,13 +68,16 @@ class ViewerViewModel(
             exchangeMode.collect { mode: ExchangeMode ->
                 when (mode) {
                     LogCat -> {
-                        logcat.launchLogCatViewing(
-                            addTerminalLine = ::addTerminalLine
-                        )
+                        logcat.launchLogCatViewing(addTerminalLine = ::addTerminalLine)
                     }
 
-                    DeviceAPI -> {}
-                    Both -> {}
+                    DeviceAPI -> {
+                        logcat.stopLogcatViewing()
+                    }
+                    Both -> {
+                        logcat.launchLogCatViewing(addTerminalLine = ::addTerminalLine)
+                        // ajouter deviceAPI
+                    }
                     else -> {
                         logcat.stopLogcatViewing()
                     }

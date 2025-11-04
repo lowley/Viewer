@@ -12,6 +12,10 @@ class LogCatComponent : ILogCatComponent {
     private var process: Process? = null
 
     override fun launchLogCatViewing(addTerminalLine: (String) -> Unit) {
+
+        if (job.isActive && process != null)
+            return
+
         job = SupervisorJob()
 
         scope.launch {
@@ -27,9 +31,11 @@ class LogCatComponent : ILogCatComponent {
                     val now = System.nanoTime()
                     val shouldFlush = batch.size >= 100 || (now - lastFlush) > 150_000_000L // ~150ms
                     if (shouldFlush) {
-                        val toSend = batch.toList(); batch.clear(); lastFlush = now
+                        val toSend = batch.toList();
+                        batch.clear();
+                        lastFlush = now
                         // Ici, appelez une API batch du VM si possible.
-                        toSend.forEach { addTerminalLine(it) } // minimal: toujours mieux que lancer une coroutine par ligne sur Main
+                        toSend.forEach { addTerminalLine(it) }
                     }
                 }
                 // flush final
@@ -42,6 +48,7 @@ class LogCatComponent : ILogCatComponent {
         process?.let {
             it.destroy()
             job.cancel() // annule les lectures en cours
+            process = null
         }
     }
 }
