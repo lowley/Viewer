@@ -1,9 +1,11 @@
 package lorry.logcat
 
+import lorry.ui.utils.TerminalLine
+
 interface ILogCatComponent {
 
     fun launchLogCatViewing(
-        addTerminalLine: (String) -> Unit
+        addTerminalLine: (TerminalLine) -> Unit
     )
 
     fun stopLogcatViewing()

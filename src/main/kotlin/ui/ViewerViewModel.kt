@@ -7,12 +7,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import lorry.deviceAPI.IDeviceAPIComponent
 import lorry.logcat.ILogCatComponent
 import lorry.ui.utils.ExchangeMode
 import lorry.ui.utils.ExchangeMode.*
+import lorry.ui.utils.TerminalLine
 
 class ViewerViewModel(
-    private val logcat: ILogCatComponent
+    private val logcat: ILogCatComponent,
+    private val deviceAPI: IDeviceAPIComponent,
 ) : ViewModel() {
 
     ////////////////
@@ -36,18 +39,18 @@ class ViewerViewModel(
     // lignes du terminal //
     ////////////////////////
 
-    typealias terminalContentMutableFlow = MutableStateFlow<List<String>>
-    typealias terminalContentFlow = StateFlow<List<String>>
+    typealias terminalContentMutableFlow = MutableStateFlow<List<TerminalLine>>
+    typealias terminalContentFlow = StateFlow<List<TerminalLine>>
 
     private val _terminalContent: terminalContentMutableFlow = MutableStateFlow(listOf())
     val terminalContent: terminalContentFlow = _terminalContent.asStateFlow()
 
-    fun setTerminalContent(content: List<String>) {
+    fun setTerminalContent(content: List<TerminalLine>) {
         _terminalContent.update { content }
     }
 
     private val maxLines = 1000
-    fun addTerminalLine(line: String){
+    fun addTerminalLine(line: TerminalLine){
         _terminalContent.update { curr ->
             val next = curr + line
             if (next.size > maxLines) next.takeLast(maxLines) else next
@@ -69,17 +72,23 @@ class ViewerViewModel(
                 when (mode) {
                     LogCat -> {
                         logcat.launchLogCatViewing(addTerminalLine = ::addTerminalLine)
+                        deviceAPI.stopDeviceAPIViewing()
                     }
 
                     DeviceAPI -> {
                         logcat.stopLogcatViewing()
+                        deviceAPI.launchDeviceAPIViewing(addTerminalLine = ::addTerminalLine)
+
                     }
+
                     Both -> {
                         logcat.launchLogCatViewing(addTerminalLine = ::addTerminalLine)
-                        // ajouter deviceAPI
+                        deviceAPI.launchDeviceAPIViewing(addTerminalLine = ::addTerminalLine)
                     }
+
                     else -> {
                         logcat.stopLogcatViewing()
+                        deviceAPI.stopDeviceAPIViewing()
                     }
                 }
             }

@@ -4,6 +4,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import lorry.ui.utils.TerminalLine
+import androidx.compose.ui.graphics.Color
+
 
 class LogCatComponent : ILogCatComponent {
 
@@ -11,7 +14,7 @@ class LogCatComponent : ILogCatComponent {
     private val scope = CoroutineScope(Dispatchers.IO + job)
     private var process: Process? = null
 
-    override fun launchLogCatViewing(addTerminalLine: (String) -> Unit) {
+    override fun launchLogCatViewing(addTerminalLine: (TerminalLine) -> Unit) {
 
         if (job.isActive && process != null)
             return
@@ -35,11 +38,17 @@ class LogCatComponent : ILogCatComponent {
                         batch.clear();
                         lastFlush = now
                         // Ici, appelez une API batch du VM si possible.
-                        toSend.forEach { addTerminalLine(it) }
+                        toSend.forEach {
+                            val line = TerminalLine(it, Color.Blue)
+                            addTerminalLine(line)
+                        }
                     }
                 }
                 // flush final
-                if (batch.isNotEmpty()) batch.forEach { addTerminalLine(it) }
+                if (batch.isNotEmpty()) batch.forEach {
+                    val line = TerminalLine(it, Color.Blue)
+                    addTerminalLine(line)
+                }
             }
         }
     }

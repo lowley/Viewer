@@ -38,6 +38,8 @@ dependencies {
 
     implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.9.5")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.8.1") // par ex.
+
+    implementation("com.google.code.gson:gson:2.10.1")
 }
 
 compose.desktop {
