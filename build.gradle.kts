@@ -13,6 +13,7 @@ repositories {
     mavenCentral()
     google()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    maven (url ="https://jitpack.io")
 }
 
 dependencies {
@@ -37,9 +38,26 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.24")
 
     implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.9.5")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.8.1") // par ex.
 
     implementation("com.google.code.gson:gson:2.10.1")
+
+    implementation("com.github.lowley:WriterAPI:v1.0.7")
+
+    /////////////////////////////////////////
+    // programmation fonctionnelle: Either //
+    /////////////////////////////////////////
+    implementation("io.arrow-kt:arrow-core:1.2.4")
+
+    ////////////////////
+    // pour Flow<xxx> //
+    ////////////////////
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.8.1")
+
+    /////////////////////
+    // pour Dispachers //
+    /////////////////////
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+
 }
 
 compose.desktop {
