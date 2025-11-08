@@ -41,7 +41,13 @@ dependencies {
 
     implementation("com.google.code.gson:gson:2.10.1")
 
-    implementation("com.github.lowley:WriterAPI:v1.0.7")
+    ///////////////
+    // WriterAPI //
+    ///////////////
+    //github -> https://jitpack.io/#lowley/WriterAPI
+//    implementation("com.github.lowley:WriterAPI:v1.0.18")
+    //local
+    implementation("io.github.lowley:WriterAPI:1.0.0")
 
     /////////////////////////////////////////
     // programmation fonctionnelle: Either //

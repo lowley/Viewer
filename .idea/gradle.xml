@@ -4,11 +4,25 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
+        <compositeConfiguration>
+          <compositeBuild compositeDefinitionSource="SCRIPT">
+            <builds>
+              <build path="$PROJECT_DIR$/../WriterAPI" name="WriterAPI">
+                <projects>
+                  <project path="$PROJECT_DIR$/../WriterAPI" />
+                  <project path="$PROJECT_DIR$/../WriterAPI/writer-api" />
+                </projects>
+              </build>
+            </builds>
+          </compositeBuild>
+        </compositeConfiguration>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="gradleHome" value="" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/../WriterAPI" />
+            <option value="$PROJECT_DIR$/../WriterAPI/writer-api" />
           </set>
         </option>
       </GradleProjectSettings>

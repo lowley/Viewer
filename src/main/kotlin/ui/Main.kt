@@ -13,19 +13,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import io.github.lowley.receiver.DeviceAPI
 import lorry.basics.appModule
+import lorry.deviceAPI.DeviceAPIComponent
+import lorry.deviceAPI.IDeviceAPIComponent
 import lorry.logcat.ILogCatComponent
-import lorry.logcat.LogCatComponent
 import lorry.ui.utils.ExchangeModeChooser
 import lorry.ui.utils.TerminalDisplay
 import org.koin.compose.koinInject
+import org.koin.core.context.GlobalContext
 import org.koin.core.context.GlobalContext.startKoin
 
 fun main() = application {
+
     startKoin {
         modules(appModule)
     }
-    Window(onCloseRequest = ::exitApplication) {
+
+    val deviceComponent: IDeviceAPIComponent = GlobalContext.get().get()
+
+    Window(onCloseRequest = {
+        deviceComponent.stopDeviceAPIViewing()
+        exitApplication()
+    }) {
         App()
     }
 }
@@ -58,11 +68,6 @@ fun App() {
             TerminalDisplay(
                 terminalContentFlow = viewModel.terminalContent
             )
-
-
-
-
-
         }
     }
 }

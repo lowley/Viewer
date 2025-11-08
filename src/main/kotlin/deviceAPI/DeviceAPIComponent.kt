@@ -1,6 +1,13 @@
 package lorry.deviceAPI
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
+import io.github.lowley.common.AdbError
 import io.github.lowley.receiver.DeviceAPI
 import io.github.lowley.receiver.IDeviceAPI
 import kotlinx.coroutines.CoroutineScope
@@ -28,8 +35,25 @@ class DeviceAPIComponent(
             ifRight = { flow ->
                 readingJob = scope.launch {
                     flow.map { event ->
+
+                        val builder: AnnotatedString.Builder = AnnotatedString.Builder()
+
+                        event.richText.richSegments.forEach { segment ->
+                            with(segment.style) {
+
+                                val finalStyle = SpanStyle(
+                                    fontWeight = if (bold) FontWeight.Bold else FontWeight.Normal,
+                                    textDecoration = if (underline) TextDecoration.Underline else TextDecoration.None,
+                                )
+
+                                builder.withStyle(style = finalStyle) {
+                                    append(text = segment.text.text)
+                                }
+                            }
+                        }
+
                         TerminalLine(
-                            text = "${event.timestampMillis}|${event.message}",
+                            text = builder.toAnnotatedString(),
                             color = Color.Red
                         )
                     }.collect { terminalLine -> addTerminalLine(terminalLine) }
@@ -38,15 +62,16 @@ class DeviceAPIComponent(
         )
     }
 
-    private fun errorInDeviceCommunication(error: DeviceAPI.AdbError) {
-        when (error){
-            is DeviceAPI.AdbError.ExceptionThrown -> println ("téléphone communication exception: ${error.throwable.message}")
-            is DeviceAPI.AdbError.CommandFailed -> println ("téléphone communication erreur: ${error.output}")
+    private fun errorInDeviceCommunication(error: AdbError) {
+        when (error) {
+            is AdbError.ExceptionThrown -> println("téléphone communication exception: ${error.throwable.message}")
+            is AdbError.CommandFailed -> println("téléphone communication erreur: ${error.output}")
         }
     }
 
     override fun stopDeviceAPIViewing() {
         readingJob?.cancel()
         readingJob = null
+        deviceAPI.close()
     }
 }

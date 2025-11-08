@@ -6,6 +6,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import lorry.ui.utils.TerminalLine
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.buildAnnotatedString
 
 
 class LogCatComponent : ILogCatComponent {
@@ -39,14 +40,22 @@ class LogCatComponent : ILogCatComponent {
                         lastFlush = now
                         // Ici, appelez une API batch du VM si possible.
                         toSend.forEach {
-                            val line = TerminalLine(it, Color.Blue)
+                            val text = buildAnnotatedString {
+                                append(line)
+                            }
+
+                            val line = TerminalLine(text, Color.Blue)
                             addTerminalLine(line)
                         }
                     }
                 }
                 // flush final
                 if (batch.isNotEmpty()) batch.forEach {
-                    val line = TerminalLine(it, Color.Blue)
+                    val text = buildAnnotatedString {
+                        append(it)
+                    }
+
+                    val line = TerminalLine(text, Color.Blue)
                     addTerminalLine(line)
                 }
             }
