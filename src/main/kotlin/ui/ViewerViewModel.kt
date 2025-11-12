@@ -1,13 +1,29 @@
 package lorry.ui
 
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.lowley.version2.viewer.IViewerAppComponent
+import io.github.lowley.version2.viewer.ViewerAppComponent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import lorry.deviceAPI.IDeviceAPIComponent
 import lorry.logcat.ILogCatComponent
 import lorry.ui.utils.ExchangeMode
@@ -18,6 +34,11 @@ class ViewerViewModel(
     private val logcat: ILogCatComponent,
     private val deviceAPI: IDeviceAPIComponent,
 ) : ViewModel() {
+
+    typealias terminalContentMutableFlow = MutableStateFlow<List<TerminalLine>>
+    typealias terminalContentFlow = StateFlow<List<TerminalLine>>
+
+    val viewerAppComponent: IViewerAppComponent = ViewerAppComponent
 
     ////////////////
     // injections //
@@ -40,9 +61,6 @@ class ViewerViewModel(
     // lignes du terminal //
     ////////////////////////
 
-    typealias terminalContentMutableFlow = MutableStateFlow<List<TerminalLine>>
-    typealias terminalContentFlow = StateFlow<List<TerminalLine>>
-
     private val _terminalContent: terminalContentMutableFlow = MutableStateFlow(listOf())
     val terminalContent: terminalContentFlow = _terminalContent.asStateFlow()
 
@@ -51,51 +69,38 @@ class ViewerViewModel(
     }
 
     private val maxLines = 1000
-    fun addTerminalLine(line: TerminalLine){
+    fun addTerminalLine(line: TerminalLine) {
         _terminalContent.update { curr ->
             val next = curr + line
             if (next.size > maxLines) next.takeLast(maxLines) else next
         }
     }
 
-
-    ////////////////////
-    // initialisation //
-    ////////////////////
-
     init {
-        /////////////////////////////////////
-        // pec changements de exchangeMode //
-        /////////////////////////////////////
+        viewModelScope.launch(Dispatchers.Default) { // travail lourd hors Main
+            viewerAppComponent.logs
+                .buffer(capacity = Channel.BUFFERED) // lisse les rafales, sans drop
+                .catch { e -> e.printStackTrace() }  // ne laisse pas la collecte mourir
+                .collect { event ->                  // ← pas collectLatest
+                    val builder = AnnotatedString.Builder()
 
-        viewModelScope.launch {
-            exchangeMode.collect { mode: ExchangeMode ->
-                when (mode) {
-                    LogCat -> {
-                        logcat.launchLogCatViewing(addTerminalLine = ::addTerminalLine)
-                        deviceAPI.stopDeviceAPIViewing()
+                    for (segment in event.richText.richSegments) {
+                        val style = SpanStyle(
+                            fontWeight = if (segment.style.bold) FontWeight.Bold else FontWeight.Normal,
+                            textDecoration = if (segment.style.underline) TextDecoration.Underline else TextDecoration.None,
+                        )
+                        builder.withStyle(style) { append(segment.text.text) }
                     }
 
-                    DeviceAPI -> {
-                        logcat.stopLogcatViewing()
-                        deviceAPI.launchDeviceAPIViewing(addTerminalLine = ::addTerminalLine)
+                    val line = TerminalLine(
+                        text = builder.toAnnotatedString(),
+                        color = Color.Red
+                    )
 
-                    }
-
-                    Both -> {
-                        logcat.launchLogCatViewing(addTerminalLine = ::addTerminalLine)
-                        deviceAPI.launchDeviceAPIViewing(addTerminalLine = ::addTerminalLine)
-                    }
-
-                    else -> {
-                        logcat.stopLogcatViewing()
-                        deviceAPI.stopDeviceAPIViewing()
+                    withContext(Dispatchers.Main) {
+                        addTerminalLine(line)
                     }
                 }
-            }
         }
-
-
     }
-
 }

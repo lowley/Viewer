@@ -33,7 +33,8 @@ context(scope: RowScope)
 fun ExchangeModeChooser(
     modifier: Modifier = Modifier,
     setExchangeMode: (ExchangeMode) -> Unit,
-    stopLogcatViewing: () -> Unit
+    stopLogcatViewing: () -> Unit,
+    enableAndroidLogs: (Boolean) -> Unit
 ) = with(scope) {
 
     var selectedIndex by remember { mutableIntStateOf(0) }
@@ -60,10 +61,13 @@ fun ExchangeModeChooser(
                     if (selectedIndex != index) {
                         selectedIndex = index
                         setExchangeMode(exchangeMode)
+                        enableAndroidLogs(exchangeMode == ExchangeMode.DeviceAPI
+                                || exchangeMode == ExchangeMode.Both)
                     }
                     else {
                         selectedIndex = 0
                         setExchangeMode(ExchangeMode.None)
+                        enableAndroidLogs(false)
                     }
 
                 },

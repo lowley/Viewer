@@ -1,19 +1,42 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "2.2.20"
+    kotlin("jvm") version "2.2.21"
     id("org.jetbrains.compose") version "1.9.2"
-    id("org.jetbrains.kotlin.plugin.compose") version "2.2.20"
+    id("org.jetbrains.kotlin.plugin.compose") version "2.2.21"
 }
 
 group = "lorry"
 version = "1.0-SNAPSHOT"
 
 repositories {
+    mavenLocal()
     mavenCentral()
     google()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     maven (url ="https://jitpack.io")
+}
+
+compose.desktop {
+    application {
+        mainClass = "lorry.ui.MainKt" // ← ta classe main
+        nativeDistributions {
+            targetFormats(
+                org.jetbrains.compose.desktop.application.dsl.TargetFormat.Exe, // installeur .exe
+                org.jetbrains.compose.desktop.application.dsl.TargetFormat.AppImage // dossier portable avec .exe
+            )
+            packageName = "Viewer"
+            packageVersion = "1.0.0"
+            includeAllModules = true // jlink auto; embarque le runtime
+            windows {
+                menu = true
+                shortcut = true
+                // iconFile.set(project.file("icons/app.ico"))
+                console = true
+            }
+        }
+    }
 }
 
 dependencies {
@@ -35,7 +58,7 @@ dependencies {
     ///////////////
     // reflexion //
     ///////////////
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.24")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:2.2.21")
 
     implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.9.5")
 
@@ -47,7 +70,7 @@ dependencies {
     //github -> https://jitpack.io/#lowley/WriterAPI
 //    implementation("com.github.lowley:WriterAPI:v1.0.18")
     //local
-    implementation("io.github.lowley:WriterAPI:1.0.0")
+    implementation("io.github.lowley:writer-api:1.0.4")
 
     /////////////////////////////////////////
     // programmation fonctionnelle: Either //
@@ -76,9 +99,15 @@ tasks.test {
     useJUnitPlatform()
 }
 kotlin {
-    jvmToolchain(23)
+    jvmToolchain(17)
 }
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.compilerOptions {
-    freeCompilerArgs.set(listOf("-Xcontext-parameters", "-Xnested-type-aliases"))
+    jvmTarget.set(JvmTarget.JVM_17)
+    freeCompilerArgs.set(
+        listOf(
+            "-Xcontext-parameters",
+            "-Xnested-type-aliases",
+        )
+    )
 }

@@ -2,7 +2,6 @@ package lorry.ui.utils
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,7 +21,8 @@ import lorry.ui.ViewerViewModel
 context(scope: ColumnScope)
 @Composable
 fun TerminalDisplay(
-    terminalContentFlow: ViewerViewModel.terminalContentFlow
+    modifier: Modifier,
+    terminalContentFlow: ViewerViewModel.terminalContentFlow,
 ) = with(scope) {
 
     val terminalContent by terminalContentFlow.collectAsState()
@@ -36,8 +36,7 @@ fun TerminalDisplay(
     }
 
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier
             .padding(5.dp)
             .background(color = Color(0xFFDADADA), shape = RoundedCornerShape(8.dp)),
         state = listState

@@ -1,4 +1,4 @@
-package lorry.basics
+package lorry.basics.Viewer
 
 import io.github.lowley.receiver.DeviceAPI
 import io.github.lowley.receiver.IDeviceAPI
