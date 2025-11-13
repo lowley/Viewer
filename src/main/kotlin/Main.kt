@@ -15,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -25,8 +24,6 @@ import io.github.lowley.version2.common.StateMessage
 import io.github.lowley.version2.viewer.IViewerAppComponent
 import io.github.lowley.version2.viewer.utils.AutomaticallyLaunchAdbComManager
 import kotlinx.coroutines.flow.StateFlow
-import lorry.basics.Viewer.appModule
-import lorry.basics.appModule
 import lorry.deviceAPI.IDeviceAPIComponent
 import lorry.logcat.ILogCatComponent
 import lorry.ui.ViewerViewModel
@@ -78,7 +75,7 @@ fun App() {
                     //après choix d'un exchangeMode
                     setExchangeMode = viewModel::setExchangeMode,
                     stopLogcatViewing = logcat::stopLogcatViewing,
-                    enableAndroidLogs = stateMachineManager::setAndroidAppLogEnabled
+                    enableAndroidLogs = stateMachineManager::enableLogs
                 )
             }
 
@@ -95,7 +92,7 @@ fun App() {
                 StatusLine(
                     modifier = Modifier
                         .background(Color.LightGray),
-                    messageFlow = stateMachineManager.stateMessage
+                    messageFlow = stateMachineManager.stateMessageFlow
                 )
             }
         }
