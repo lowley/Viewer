@@ -10,8 +10,10 @@ import lorry.ui.ViewerViewModel
 import org.koin.dsl.module
 
 val appModule = module {
-    single<ILogCatComponent> { LogCatComponent() }
-    single<IDeviceAPI> { DeviceAPI() }
     single { ViewerViewModel(get(), get()) }
+
+    single<ILogCatComponent> { LogCatComponent() }
+
+    single<IDeviceAPI> { DeviceAPI() }
     single<IDeviceAPIComponent> { DeviceAPIComponent(get()) }
 }
