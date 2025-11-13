@@ -1,10 +1,8 @@
 package lorry.ui
 
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
@@ -19,8 +17,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -78,7 +74,7 @@ class ViewerViewModel(
 
     init {
         viewModelScope.launch(Dispatchers.Default) { // travail lourd hors Main
-            viewerAppComponent.logs
+            viewerAppComponent.logFlow
                 .buffer(capacity = Channel.BUFFERED) // lisse les rafales, sans drop
                 .catch { e -> e.printStackTrace() }  // ne laisse pas la collecte mourir
                 .collect { event ->                  // ← pas collectLatest

@@ -22,7 +22,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import io.github.lowley.version2.common.StateMessage
 import io.github.lowley.version2.viewer.IViewerAppComponent
-import io.github.lowley.version2.viewer.utils.AutomaticallyLaunchAdbComManager
+import io.github.lowley.version2.viewer.utils.InitializeViewerLogging
 import kotlinx.coroutines.flow.StateFlow
 import lorry.deviceAPI.IDeviceAPIComponent
 import lorry.logcat.ILogCatComponent
@@ -42,7 +42,7 @@ fun main() = application {
     }
 
     val deviceComponent: IDeviceAPIComponent = GlobalContext.get().get()
-    AutomaticallyLaunchAdbComManager
+    InitializeViewerLogging
 
     Window(onCloseRequest = {
         deviceComponent.stopDeviceAPIViewing()
