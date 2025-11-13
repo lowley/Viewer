@@ -22,7 +22,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import io.github.lowley.version2.common.StateMessage
 import io.github.lowley.version2.viewer.IViewerLogging
-import io.github.lowley.version2.viewer.utils.InitializeViewerLogging
+import io.github.lowley.version2.viewer.ViewerLogging.startService
 import kotlinx.coroutines.flow.StateFlow
 import lorry.deviceAPI.IDeviceAPIComponent
 import lorry.logcat.ILogCatComponent
@@ -31,18 +31,16 @@ import lorry.ui.utils.ExchangeModeChooser
 import lorry.ui.utils.TerminalDisplay
 import org.koin.compose.koinInject
 import org.koin.core.context.GlobalContext
+import lorry.basics.Viewer.appModule
 
 fun main() = application {
 
     GlobalContext.startKoin {
-        modules(
-            lorry.basics.appModule,
-            lorry.basics.Viewer.appModule,
-        )
+        modules(appModule)
     }
 
     val deviceComponent: IDeviceAPIComponent = GlobalContext.get().get()
-    InitializeViewerLogging
+    startService()
 
     Window(onCloseRequest = {
         deviceComponent.stopDeviceAPIViewing()
