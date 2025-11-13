@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import io.github.lowley.version2.common.StateMessage
-import io.github.lowley.version2.viewer.IViewerAppComponent
+import io.github.lowley.version2.viewer.IViewerLogging
 import io.github.lowley.version2.viewer.utils.InitializeViewerLogging
 import kotlinx.coroutines.flow.StateFlow
 import lorry.deviceAPI.IDeviceAPIComponent
@@ -59,7 +59,7 @@ fun App() {
 
     val viewModel: ViewerViewModel = koinInject()
     val logcat: ILogCatComponent = koinInject()
-    val stateMachineManager: IViewerAppComponent = koinInject()
+    val stateMachineManager: IViewerLogging = koinInject()
 
     MaterialExpressiveTheme {
         Column(

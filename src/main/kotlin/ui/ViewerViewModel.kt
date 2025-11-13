@@ -8,8 +8,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.lowley.version2.viewer.IViewerAppComponent
-import io.github.lowley.version2.viewer.ViewerAppComponent
+import io.github.lowley.version2.viewer.IViewerLogging
+import io.github.lowley.version2.viewer.ViewerLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,7 +34,7 @@ class ViewerViewModel(
     typealias terminalContentMutableFlow = MutableStateFlow<List<TerminalLine>>
     typealias terminalContentFlow = StateFlow<List<TerminalLine>>
 
-    val viewerAppComponent: IViewerAppComponent = ViewerAppComponent
+    val viewerAppComponent: IViewerLogging = ViewerLogging
 
     ////////////////
     // injections //
