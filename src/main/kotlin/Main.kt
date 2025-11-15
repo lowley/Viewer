@@ -73,7 +73,7 @@ fun App() {
                     //après choix d'un exchangeMode
                     setExchangeMode = viewModel::setExchangeMode,
                     stopLogcatViewing = logcat::stopLogcatViewing,
-                    enableAndroidLogs = stateMachineManager::enableLogs
+                    enableAndroidLogs = stateMachineManager::toggleLogs
                 )
             }
 
