@@ -8,8 +8,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.lowley.version2.viewer.IViewerLogging
-import io.github.lowley.version2.viewer.ViewerLogging
+import io.github.lowley.version2.surface.IViewerLogging
+import io.github.lowley.version2.surface.ViewerLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
