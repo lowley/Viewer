@@ -20,8 +20,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import io.github.lowley.version2.boat.SurfaceLogging
 import io.github.lowley.version2.common.StateMessage
-import io.github.lowley.version2.boat.ISurfaceLogging
 import io.github.lowley.version2.boat.SurfaceLogging.startService
 import kotlinx.coroutines.flow.StateFlow
 import lorry.deviceAPI.IDeviceAPIComponent
@@ -40,7 +40,7 @@ fun main() = application {
     }
 
     val deviceComponent: IDeviceAPIComponent = GlobalContext.get().get()
-    startService()
+    SurfaceLogging.startService()
 
     Window(onCloseRequest = {
         deviceComponent.stopDeviceAPIViewing()
@@ -57,7 +57,6 @@ fun App() {
 
     val viewModel: ViewerViewModel = koinInject()
     val logcat: ILogCatComponent = koinInject()
-    val stateMachineManager: ISurfaceLogging = koinInject()
 
     MaterialExpressiveTheme {
         Column(
@@ -73,7 +72,7 @@ fun App() {
                     //après choix d'un exchangeMode
                     setExchangeMode = viewModel::setExchangeMode,
                     stopLogcatViewing = logcat::stopLogcatViewing,
-                    enableAndroidLogs = stateMachineManager::toggleLogs
+                    enableAndroidLogs = SurfaceLogging::toggleLogs
                 )
             }
 
@@ -90,7 +89,7 @@ fun App() {
                 StatusLine(
                     modifier = Modifier
                         .background(Color.LightGray),
-                    messageFlow = stateMachineManager.stateMessageFlow
+                    messageFlow = SurfaceLogging.stateMessageFlow
                 )
             }
         }
