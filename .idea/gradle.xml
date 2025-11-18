@@ -7,9 +7,9 @@
         <compositeConfiguration>
           <compositeBuild compositeDefinitionSource="SCRIPT">
             <builds>
-              <build path="$PROJECT_DIR$/../WriterAPI" name="WriterAPI">
+              <build path="$PROJECT_DIR$/../Périscope" name="periscope">
                 <projects>
-                  <project path="$PROJECT_DIR$/../WriterAPI" />
+                  <project path="$PROJECT_DIR$/../Périscope" />
                 </projects>
               </build>
             </builds>
@@ -19,8 +19,8 @@
         <option name="gradleHome" value="" />
         <option name="modules">
           <set>
+            <option value="$PROJECT_DIR$/../Périscope" />
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/../WriterAPI" />
           </set>
         </option>
       </GradleProjectSettings>

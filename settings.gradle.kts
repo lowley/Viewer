@@ -3,4 +3,4 @@ plugins {
 }
 rootProject.name = "Viewer"
 
-includeBuild("../WriterAPI")
+includeBuild("../Périscope")

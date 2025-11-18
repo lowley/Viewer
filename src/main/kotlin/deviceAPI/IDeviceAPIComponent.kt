@@ -4,7 +4,7 @@ import lorry.ui.utils.TerminalLine
 
 interface IDeviceAPIComponent {
 
-    fun launchDeviceAPIViewing(addTerminalLine: (TerminalLine) -> Unit)
+    suspend fun launchDeviceAPIViewing(addTerminalLine: (TerminalLine) -> Unit)
 
     fun stopDeviceAPIViewing()
 

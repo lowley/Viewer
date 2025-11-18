@@ -70,7 +70,7 @@ dependencies {
     //github -> https://jitpack.io/#lowley/WriterAPI
 //    implementation("com.github.lowley:WriterAPI:v1.0.18")
     //local
-    implementation("io.github.lowley:writer-api:1.0.4")
+    implementation("io.github.lowley:periscope:1.0.4")
 
     /////////////////////////////////////////
     // programmation fonctionnelle: Either //

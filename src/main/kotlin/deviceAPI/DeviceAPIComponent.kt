@@ -8,59 +8,54 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import io.github.lowley.common.AdbError
-import io.github.lowley.receiver.DeviceAPI
-import io.github.lowley.receiver.IDeviceAPI
+import io.github.lowley.engineRoom.boat.SurfaceLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.fold
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import lorry.ui.utils.TerminalLine
 
 class DeviceAPIComponent(
-    val deviceAPI: IDeviceAPI
 ) : IDeviceAPIComponent {
 
     var readingJob: Job? = null
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    override fun launchDeviceAPIViewing(addTerminalLine: (TerminalLine) -> Unit) {
+    override suspend fun launchDeviceAPIViewing(addTerminalLine: (TerminalLine) -> Unit) {
         if (readingJob != null)
             return
 
-        val eventFlow = deviceAPI.deviceLogEvents()
-        eventFlow.fold(
-            ifLeft = { error -> errorInDeviceCommunication(error = error) },
-            ifRight = { flow ->
-                readingJob = scope.launch {
-                    flow.map { event ->
+        readingJob = scope.launch {
+            SurfaceLogging.logFlow.map { event ->
 
-                        val builder: AnnotatedString.Builder = AnnotatedString.Builder()
+                val builder: AnnotatedString.Builder = AnnotatedString.Builder()
 
-                        event.richText.richSegments.forEach { segment ->
-                            with(segment.style) {
+                event.richText.richSegments.forEach { segment ->
+                    with(segment.style) {
 
-                                val finalStyle = SpanStyle(
-                                    fontWeight = if (bold) FontWeight.Bold else FontWeight.Normal,
-                                    textDecoration = if (underline) TextDecoration.Underline else TextDecoration.None,
-                                )
-
-                                builder.withStyle(style = finalStyle) {
-                                    append(text = segment.text.text)
-                                }
-                            }
-                        }
-
-                        TerminalLine(
-                            text = builder.toAnnotatedString(),
-                            color = Color.Red
+                        val finalStyle = SpanStyle(
+                            fontWeight = if (bold) FontWeight.Bold else FontWeight.Normal,
+                            textDecoration = if (underline) TextDecoration.Underline else TextDecoration.None,
                         )
-                    }.collect { terminalLine -> addTerminalLine(terminalLine) }
+
+                        builder.withStyle(style = finalStyle) {
+                            append(text = segment.text.text)
+                        }
+                    }
                 }
-            }
-        )
+
+                TerminalLine(
+                    text = builder.toAnnotatedString(),
+                    color = Color.Red
+                )
+            }.collect { terminalLine -> addTerminalLine(terminalLine) }
+        }
     }
+
 
     private fun errorInDeviceCommunication(error: AdbError) {
         when (error) {
@@ -72,6 +67,5 @@ class DeviceAPIComponent(
     override fun stopDeviceAPIViewing() {
         readingJob?.cancel()
         readingJob = null
-        deviceAPI.close()
     }
 }

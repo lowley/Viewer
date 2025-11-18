@@ -20,9 +20,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import io.github.lowley.version2.boat.SurfaceLogging
-import io.github.lowley.version2.common.StateMessage
-import io.github.lowley.version2.boat.SurfaceLogging.startService
+import io.github.lowley.engineRoom.boat.SurfaceLogging
+import io.github.lowley.engineRoom.common.StateMessage
 import kotlinx.coroutines.flow.StateFlow
 import lorry.deviceAPI.IDeviceAPIComponent
 import lorry.logcat.ILogCatComponent
@@ -35,6 +34,7 @@ import lorry.basics.Viewer.appModule
 
 fun main() = application {
 
+    SurfaceLogging.startService()
     GlobalContext.startKoin {
         modules(appModule)
     }
